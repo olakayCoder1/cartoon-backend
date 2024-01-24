@@ -265,7 +265,7 @@ class ConfimStripeCheckoutPaymentView(APIView):
 
         try:
             charge = stripe.Charge.create(
-                amount=float(purchase.total_price) * 100,
+                amount=float(10) * 100,
                 currency='USD',
                 source=serialiser.validated_data['token'],
                 description="Portrait Purchase",
@@ -275,12 +275,8 @@ class ConfimStripeCheckoutPaymentView(APIView):
             print(charge)
             # Only confirm a funding after status: succeeded
             if charge["status"] == "succeeded":
-                purchase.payment_status = 'successful'
-                purchase.save()
                 return Response(dict(status=True,detail="Transaction successful"),status=status.HTTP_200_OK)
             else:
-                purchase.payment_status = 'failed'
-                purchase.save()
                 return Response(dict(status=False,detail="Could not verify transaction"),status=status.HTTP_400_BAD_REQUEST)
             
         except stripe.error.CardError as e:
