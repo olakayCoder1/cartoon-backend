@@ -25,3 +25,9 @@ class AnonymousPaymentCheckoutSerializer(serializers.Serializer):
 
 class UserJoinNewsletterSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
+
+
+
+class LeedUserJoinSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+    name = serializers.CharField(required=True)

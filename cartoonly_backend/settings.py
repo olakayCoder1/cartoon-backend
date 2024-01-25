@@ -14,7 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3tf7jjjbqpb7dvwoz36ru6qj--m-6waardrf&k@$f-zbr@ouhs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['.vercel.app', "*"]
 
@@ -76,7 +76,7 @@ ROOT_URLCONF = 'cartoonly_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -96,29 +96,22 @@ WSGI_APPLICATION = 'cartoonly_backend.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-# if DEBUG:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db.sqlite3',
-#         },
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        },
 
-#     }
-# else:
-#     DATABASES = {
-#         'default': {
-#             'ENGINE': 'django.db.backends.sqlite3',
-#             'NAME': BASE_DIR / 'db_prod.sqlite3',
-#         },
-
-#     }
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default="postgres://default:AXYDJxCcI4s8@ep-falling-violet-74277946.us-east-1.postgres.vercel-storage.com:5432/verceldb"
+        )
+    }
 
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default="postgres://default:AXYDJxCcI4s8@ep-falling-violet-74277946.us-east-1.postgres.vercel-storage.com:5432/verceldb"
-    )
-}
 
 # DATABASES = {
 #     'default': {
@@ -253,3 +246,12 @@ SWAGGER_SETTINGS = {
         }
     }
 }
+
+
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER="programmerolakay@gmail.com"
+EMAIL_HOST_PASSWORD="xsivhbybtzhuwvul"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

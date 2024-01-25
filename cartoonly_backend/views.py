@@ -1,5 +1,6 @@
-from django.conf import settings
 import stripe
+from threading import Thread
+from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
@@ -12,10 +13,36 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from admin_user.models import FAQ
 from portrait.models import PurchaseImage
-from .serializers import PaymentCheckoutSerializer ,PaymentCheckoutConfirmSerializer,  UserJoinNewsletterSerializer , AnonymousPaymentCheckoutSerializer
-from account.models import PaymentTransaction , NewsLetterUser , OrderItem
+from .serializers import PaymentCheckoutSerializer ,PaymentCheckoutConfirmSerializer,LeedUserJoinSerializer,  UserJoinNewsletterSerializer , AnonymousPaymentCheckoutSerializer
+from account.models import PaymentTransaction , NewsLetterUser , OrderItem , LeedUser
 # Create your views here.
+from helpers.mail import MailServices
 
+
+
+
+class LeadUserJoinApiView(generics.GenericAPIView):
+    serializer_class = LeedUserJoinSerializer
+
+
+    def post(self,request):
+        serialiser = self.serializer_class(data=request.data)
+        serialiser.is_valid(raise_exception=True)
+
+        try:
+            email = serialiser.validated_data['email'].lower()
+            name = serialiser.validated_data['name']
+            exist_mail = LeedUser.objects.filter(email=email).first()
+            if exist_mail:
+                return Response(dict(status=False,detail='The provided email already exist'),status=status.HTTP_400_BAD_REQUEST)
+            LeedUser.objects.create(email=email,name=name)
+            Thread(target=MailServices.come_back_mail, kwargs={
+                        'email': email , 'name': name
+                    }).start()
+            return Response(dict(status=True,detail='Email successfully register for newsletter'),status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(dict(status=False,detail='An error occured'),status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class UserJoinNewsletterApiView(generics.GenericAPIView):
@@ -32,6 +59,9 @@ class UserJoinNewsletterApiView(generics.GenericAPIView):
             if exist_mail:
                 return Response(dict(status=False,detail='Email already signup for newsletter'),status=status.HTTP_400_BAD_REQUEST)
             NewsLetterUser.objects.create(email=email)
+            Thread(target=MailServices.come_back_mail, kwargs={
+                        'email': email
+                    }).start()
             return Response(dict(status=True,detail='Email successfully register for newsletter'),status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
@@ -219,19 +249,24 @@ class ConfimStripeCheckoutPaymentView_2(APIView):
         try:
             # Retrieve the payment session from Stripe
             session = stripe.checkout.Session.retrieve(session_id)
-
-            print(session.__dict__)
-
             if session.payment_status == 'paid':
                 metadata = session.metadata
                 txn_ref = metadata['txn_ref']
                 order_ref = metadata['order_ref']
                 txn = PaymentTransaction.objects.get(uuid=txn_ref)
-                txn.status = 'success'
-                txn.save()
                 order = OrderItem.objects.get(uuid=order_ref)
                 order.payment_status = 'successful'
                 order.save()
+                if txn.status != 'success':
+                    txn.status = 'success'
+                    txn.save()
+                    Thread(target=MailServices.send_successfully_order_mail, kwargs={
+                        'email': order.email ,
+                        'name': f"{order.first_name} {order.last_name }",
+                        'order_id': order_ref , 
+                        'txn_id':txn_ref,
+                        'water_mark':order.is_water_mark
+                    }).start()
                 # Payment is successful, update your database or perform any other actions
                 return Response({'status': True , 'detail': 'Payment successfull'},status=status.HTTP_200_OK)
             else:

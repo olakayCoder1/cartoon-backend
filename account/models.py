@@ -189,6 +189,24 @@ class NewsLetterUser(models.Model):
 
 
 
+class LeedUser(models.Model):
+    uuid = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+
+
+    def save(self, *args, **kwargs):
+        # Generate a new unique uuid if it's not set
+        if not self.uuid:
+            self.uuid = str(uuid4())
+
+        super().save(*args, **kwargs)
+
+
+
 
 
 

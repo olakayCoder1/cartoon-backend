@@ -6,7 +6,7 @@ from drf_yasg import openapi
 from rest_framework import permissions 
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import AllFAQ , StripeCheckoutView , stripe_webhook , ConfimStripeCheckoutPaymentView_2 , UserJoinNewsletterApiView , AnonymousStripeCheckoutView ,ConfimStripeCheckoutPaymentView
+from .views import AllFAQ , StripeCheckoutView , stripe_webhook , ConfimStripeCheckoutPaymentView_2 ,LeadUserJoinApiView, UserJoinNewsletterApiView , AnonymousStripeCheckoutView ,ConfimStripeCheckoutPaymentView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 
@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/v1/',include('api.version1')),
     path('api/v1/faq', AllFAQ.as_view()),
     path('api/v1/newsletter', UserJoinNewsletterApiView.as_view()),
+    path('api/v1/comeback', LeadUserJoinApiView.as_view()),
 
    #  path('api/v1/staff/', include('admin_user.urls')),
     path('api/v1/make-payment/session', StripeCheckoutView.as_view()),
