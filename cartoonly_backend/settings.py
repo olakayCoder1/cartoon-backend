@@ -13,9 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3tf7jjjbqpb7dvwoz36ru6qj--m-6waardrf&k@$f-zbr@ouhs'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.vercel.app', "*"]
 
 AUTH_USER_MODEL = 'account.User'
 # Application definition
@@ -169,9 +169,10 @@ if DEBUG:
     MEDIA_URL = '/media/' 
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 else:
-    STATIC_URL = 'https://hostel-staticfiles.vercel.app/'
-    MEDIA_URL = 'https://hostel-staticfiles.vercel.app/media/'  
+    STATIC_URL = 'https://hostel-staticfiles.vercel.app/static/cartonly/'
+    MEDIA_URL = 'https://hostel-staticfiles.vercel.app/media/cartonly/'  
     MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  
+    # STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static') ] 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
