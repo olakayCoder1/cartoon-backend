@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -112,13 +113,20 @@ WSGI_APPLICATION = 'cartoonly_backend.wsgi.application'
 
 #     }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db_prod.sqlite3',
-    },
 
+DATABASES = {
+    'default': dj_database_url.config(
+        default="postgres://default:AXYDJxCcI4s8@ep-falling-violet-74277946.us-east-1.postgres.vercel-storage.com:5432/verceldb"
+    )
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db_prod.sqlite3',
+#     },
+
+# }
 #     DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
