@@ -201,7 +201,7 @@ SPECTACULAR_SETTINGS = {
 
 GOOGLE_OAUTH2_CLIENT_ID=os.environ.get('GOOGLE_OAUTH2_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET=os.environ.get('GOOGLE_OAUTH2_CLIENT_SECRET')
-BASE_FRONTEND_URL = os.environ.get('DJANGO_BASE_FRONTEND_URL', default='http://localhost:5173')
+BASE_FRONTEND_URL = os.environ.get('DJANGO_BASE_FRONTEND_URL', default='https://carve-alpha.vercel.app')
 
 
 
